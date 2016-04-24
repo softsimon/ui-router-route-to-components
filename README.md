@@ -1,4 +1,4 @@
-# ui-router-route-to-component
+# ui-router-route-to-components
 
 Route to components today using Angular 1.5+ and ui-router 0.2.x+
 
