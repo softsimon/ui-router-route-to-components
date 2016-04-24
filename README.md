@@ -6,7 +6,7 @@ Route to components today using Angular 1.5+ and ui-router 0.2.x+
 
 Add module dependency 'ui.router.components'
 
-Example state config:
+### Example state config:
 
 ```javascript
 .state('users', {
@@ -15,7 +15,7 @@ Example state config:
 	component  : 'users',
 })
 ```
-Or
+### Or
 ```javascript
 .state('users', {
 	parent		: 'header',
@@ -26,6 +26,32 @@ Or
 		}
 	}
 })
+```
+### Resolve:
+
+```javascript
+.state('users', {
+	parent		: 'header',
+	url			: '/users/:id',
+	component  : 'users',
+	resolve: {
+        data: function () {
+	        return "some data";
+        }
+	}
+})
+
+.component('users', {
+    bindings: {
+        data: '<'
+    },
+    controller: UsersController,
+    templateUrl: '../app/users/users.template.html',
+});
+
+function UsersController() {
+    console.log(this.data); // "some data"
+}
 ```
 # Credits
 
