@@ -1,65 +1,69 @@
-'use strict';
+(function(){
+	'use strict';
 
-var app = angular.module('ui.router.components', ['ui.router']);
-var args2Array = function args2Array(_args) {
-		return Array.prototype.slice.call(_args);
-};
+	angular
+		.module('ui.router.components', ['ui.router'])
+		.config(registerComponentDecorator);
 
-function bindResolves() {
-		var injectNames = controller.$inject = ['$scope'].concat(args2Array(arguments));
+	var args2Array = function args2Array(_args) {
+			return Array.prototype.slice.call(_args);
+	};
 
-		function controller($scope) {
-				var injectValues = args2Array(arguments);
-				for (var i = 1; i < injectValues.length; i++) {
-						$scope[injectNames[i]] = injectValues[i];
-				}
-		}
+	function bindResolves() {
+			var injectNames = controller.$inject = ['$scope'].concat(args2Array(arguments));
 
-		return controller;
-}
+			function controller($scope) {
+					var injectValues = args2Array(arguments);
+					for (var i = 1; i < injectValues.length; i++) {
+							$scope[injectNames[i]] = injectValues[i];
+					}
+			}
 
-var getCompInputs = function getCompInputs($injector, componentName) {
-		return $injector.get(componentName + "Directive").map(function (directive) {
-				return Object.keys(directive.bindToController);
-		}).reduce(unnestR, []);
-};
+			return controller;
+	}
 
-var unnestR = function unnestR(acc, array) {
-		return acc.concat(array);
-};
+	var getCompInputs = function getCompInputs($injector, componentName) {
+			return $injector.get(componentName + "Directive").map(function (directive) {
+					return Object.keys(directive.bindToController);
+			}).reduce(unnestR, []);
+	};
 
-function setStateDef(stateDef) {
-		stateDef.controllerProvider = function ($injector) {
-				return bindResolves.apply(null, getCompInputs($injector, stateDef.component));
-		};
+	var unnestR = function unnestR(acc, array) {
+			return acc.concat(array);
+	};
 
-		stateDef.templateProvider = function ($injector) {
-				var attrs = getCompInputs($injector, stateDef.component).map(function (key) {
-						return key + '="' + key + '"';
-				}).join(" ");
-				var kebobName = stateDef.component.replace(/([A-Z])/g, function ($1) {
-						return "-" + $1.toLowerCase();
-				});
-				var template = '<' + kebobName + ' ' + attrs + '></' + kebobName + '>';
-				return template;
-		};
-}
+	function setStateDef(stateDef) {
+			stateDef.controllerProvider = function ($injector) {
+					return bindResolves.apply(null, getCompInputs($injector, stateDef.component));
+			};
 
-function registerComponentDecorator($stateProvider) {
-		$stateProvider.decorator('component', function (stateDef, parent) {
-				if (stateDef.component) {
-						setStateDef(stateDef);
-				}
-				if (stateDef.views) {
-						for (var view in stateDef.views) {
-								if (stateDef.views[view].component) {
-										setStateDef(stateDef.views[view]);
-								}
-						}
-				}
+			stateDef.templateProvider = function ($injector) {
+					var attrs = getCompInputs($injector, stateDef.component).map(function (key) {
+							return key + '="' + key + '"';
+					}).join(" ");
+					var kebobName = stateDef.component.replace(/([A-Z])/g, function ($1) {
+							return "-" + $1.toLowerCase();
+					});
+					var template = '<' + kebobName + ' ' + attrs + '></' + kebobName + '>';
+					return template;
+			};
+	}
 
-				return stateDef.component;
-		});
-}
+	function registerComponentDecorator($stateProvider) {
+			$stateProvider.decorator('component', function (stateDef, parent) {
+					if (stateDef.component) {
+							setStateDef(stateDef);
+					}
+					if (stateDef.views) {
+							for (var view in stateDef.views) {
+									if (stateDef.views[view].component) {
+											setStateDef(stateDef.views[view]);
+									}
+							}
+					}
 
-app.config(registerComponentDecorator);
+					return stateDef.component;
+			});
+	}
+
+}());
