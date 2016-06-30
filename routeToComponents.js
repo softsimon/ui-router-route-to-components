@@ -36,17 +36,24 @@
 		stateDef.controllerProvider = function ($injector) {
 			return bindResolves.apply(null, getCompInputs($injector, stateDef.component));
 		};
+		stateDef.controllerProvider.$inject = ['$injector'];
 
 		stateDef.templateProvider = function ($injector) {
 			var attrs = getCompInputs($injector, stateDef.component).map(function (key) {
-				return key + '="' + key + '"';
-			}).join(" ");
-			var kebobName = stateDef.component.replace(/([A-Z])/g, function ($1) {
-				return "-" + $1.toLowerCase();
-			});
-			var template = '<' + kebobName + ' ' + attrs + '></' + kebobName + '>';
-			return template;
+				return kebobString(key) + '="' + key + '"';
+			}).join(' ');
+
+			var kebobName = kebobString(stateDef.component);
+
+			return '<' + kebobName + ' ' + attrs + '></' + kebobName + '>';
 		};
+		stateDef.templateProvider.$inject = ['$injector'];
+	}
+
+	function kebobString(str) {
+		return str.replace(/([A-Z])/g, function ($1) {
+			return '-' + $1.toLowerCase();
+		});
 	}
 
 	function registerComponentDecorator($stateProvider) {
@@ -54,6 +61,7 @@
 			if (stateDef.component) {
 				setStateDef(stateDef);
 			}
+			
 			if (stateDef.views) {
 				for (var view in stateDef.views) {
 					if (stateDef.views[view].component) {
@@ -65,5 +73,6 @@
 			return stateDef.component;
 		});
 	}
+	registerComponentDecorator.$inject = ['$stateProvider'];
 
 }());
