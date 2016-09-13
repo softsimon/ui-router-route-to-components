@@ -1,6 +1,6 @@
 {
   "name": "ui-router-route-to-components",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Route to components today using Angular 1.5+ and ui-router 0.2.x+",
   "main": "routeToComponents.js",
   "repository": {
@@ -8,14 +8,17 @@
     "url": "git+https://github.com/softsimon/ui-router-route-to-components.git"
   },
   "keywords": [
-    "uirouter",
     "angular",
-    "component"
+    "angular-ui-router",
+    "components"
   ],
   "author": "softsimon",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/softsimon/ui-router-route-to-components/issues"
   },
-  "homepage": "https://github.com/softsimon/ui-router-route-to-components#readme"
+  "homepage": "https://github.com/softsimon/ui-router-route-to-components#readme",
+  "dependencies": {
+    "angular-ui-router": ">=0.2.0 <1.0.0"
+  }
 }
