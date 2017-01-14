@@ -28,6 +28,33 @@
 		}).reduce(unnestR, []);
 	};
 
+	var getAttrs = function getAttrs($injector, componentName) {
+		return $injector.get(componentName + "Directive").map(function (directive) {
+			var inputs = [];
+			for (var key in directive.bindToController) {
+				if (directive.bindToController.hasOwnProperty(key)) {
+					var binding = directive.bindToController[key];
+					if (!binding || !binding.length) {
+						continue;
+					}
+
+					if (binding.length === 1) {
+						inputs.push({
+							key: key,
+							value: key
+						});
+					} else {
+						inputs.push({
+							key: binding.substring(1),
+							value: key
+						});
+					}
+				}
+			}
+			return inputs;
+		}).reduce(unnestR, []);
+	};
+
 	var unnestR = function unnestR(acc, array) {
 		return acc.concat(array);
 	};
@@ -39,8 +66,10 @@
 		stateDef.controllerProvider.$inject = ['$injector'];
 
 		stateDef.templateProvider = function ($injector) {
-			var attrs = getCompInputs($injector, stateDef.component).map(function (key) {
-				return kebobString(key) + '="' + key + '"';
+			var attrs = getAttrs($injector, stateDef.component).map(function (object) {
+				var key = object.key;
+				var value = object.value;
+				return kebobString(key) + '="' + value + '"';
 			}).join(' ');
 
 			var kebobName = kebobString(stateDef.component);
